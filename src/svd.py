@@ -38,7 +38,7 @@ class IMG_SVD:
 
         horizontal_block_count = self.padded.shape[1] // self.block_size
 
-        for index, (u, v, d) in enumerate(self.blocks):
+        for index, (u, v, d, mean) in enumerate(self.blocks):
             i = index // horizontal_block_count
             j = index % horizontal_block_count
 
@@ -50,7 +50,7 @@ class IMG_SVD:
             c_max = min((j + 1) * self.block_size, self.original.shape[1])
             col_diff = c_max - c_min
 
-            block = u @ np.diag(d) @ v.T
+            block = (u @ np.diag(d) @ v.T) + mean
 
             output[r_min:r_max, c_min:c_max] = block[:row_diff, :col_diff]
         
@@ -60,38 +60,41 @@ class IMG_SVD:
     def calculate_size(self):
         tot_size = 0.0
         for block in self.blocks:
-            u, d, v = block
+            u, d, v, mean = block
             tot_size += prod(u.shape)
             tot_size += prod(v.shape)
-            tot_size += (d > 0).sum()
+            tot_size += prod(d.shape)
+            tot_size += 1
 
         # return result in bytes where each float uses 3 bytes
         return tot_size * 3
 
     
 def svd_factor(arr, frac=1.0, max_sum=None):
-    u, sigma, vh = svd(arr)
+    mean = arr.mean()
+    u, sigma, vh = svd(arr - mean)
 
     if frac < 1.0:
         rank = int(len(sigma) * frac * 10.0 + 0.5)//10
-        filter = np.hstack([np.ones(rank), np.zeros(len(sigma) - rank)])
-        sigma *= filter
 
     elif max_sum is not None:
         rank = 0
         tot = 0.0
 
         for sv in sigma:
-            if max_sum >= tot + sv:
+            if (max_sum >= tot + sv):
                 tot += sv
                 rank += 1
             else:
                 break
-        
-        filter = np.hstack([np.ones(rank), np.zeros(len(sigma) - rank)])
-        sigma *= filter
+    else:
+        rank = len(sigma)
 
-    return u, vh.T, sigma
+    u = u[:, :rank]
+    sigma = sigma[:rank]
+    vh = vh[:rank, :]
+
+    return u, vh.T, sigma, mean
 
 
 if __name__ == '__main__':
@@ -99,7 +102,7 @@ if __name__ == '__main__':
 
     print('arr:', arr)
 
-    factorization = IMG_SVD(arr, block_size=8, frac=0.5)
+    factorization = IMG_SVD(arr, block_size=8, frac=0.6)
     new_arr = factorization.recreate()
 
     print('decoded:', new_arr)

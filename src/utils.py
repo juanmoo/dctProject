@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image
+from math import prod
 
 '''
 Loads image in <path> and transforms it into a single-channel image with grayscale 
@@ -22,12 +23,27 @@ def load_grayscale(path, square=False):
     return gs_img
 
 '''
+Creates image object from grayscale array.
+'''
+def image_from_grayscale_array(arr):
+    gs_img = np.array([arr] * 3, dtype=np.uint8).T
+    gs_img = Image.fromarray(gs_img)
+
+    return gs_img
+
+'''
+Calculate the size of an image considering only one color channel in bytes.
+'''
+def calculate_image_size(img):
+    return prod(img.size) * 3
+
+'''
 Crops image to square and resizes to square image with size 512 by 512 px
 '''
-def resize512(img):
+def square_resize(img, size):
     dim = min(img.size)
     new_image = img.crop((0, 0, dim, dim))
-    return new_image.resize((512, 512))
+    return new_image.resize((size, size))
 
 
 if __name__ == '__main__':
