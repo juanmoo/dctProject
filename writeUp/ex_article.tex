@@ -281,6 +281,10 @@ using a zig-zag pattern like the one shown in figure \ref{fig:zigzag}.
   \label{fig:zigzag}
 \end{figure}
 
+This ordering takes advantage that low-frequencies normally have non-zero coefficients 
+and high-frequencies tend to have zero-coefficients. Packing the zero-coefficients
+together allows for better compression using an entropy-coding algorithm such as 
+Huffman Coding.
 
 \subsection{Block Algorithms}
 A common technique when designing image and video compression systems is that of
@@ -291,7 +295,40 @@ spacial redundancies often encountered images \cite{ahmed1974discrete}. For DCT,
 it is customary to utilize square blocks of size 8.
 
 \subsection{Huffman Coding}
-\lipsum[27-29]
+As depicted in figure \ref{fig:compression-arch}, after the quantization step,
+further lossless compression is obtained using a form of entropy coding. One of the
+widely used algorithms used for this purpose was suggested by David Huffman in the
+paper ``A Method for the Construction of Minimum-Redundancy Codes'' \cite{huffman1952method}.
+
+The algorithm can efficiently create encodings for the symbols utilized in the original
+data given a list of frequencies for each symbol. If the frequencies of the symbols
+used are ordered, it is possible to design an appropriate encoding in linear time
+as follows:
+
+\begin{algorithm}
+  \caption{Huffman Encoding}
+  \label{alg:huffman}
+  \begin{algorithmic}[1]
+  \STATE{For each symbol $s_i \in S$, create a leaf vertex $v_i$}
+  \STATE{Create two priority queues $Q_1, Q_2$}
+  \STATE{Enqueue all $v_i$ in the first queue according to their symbol frequency $f(v_i)$ 
+  in increasing order}
+
+  \WHILE{$|Q_1| + |Q_2| > 1$}
+  \STATE{Dequeue the lowest two vertices of the queues by examining the fronts of
+  both queues}
+  \STATE{Create a new inner vertex that has the two dequeued as child nodes and arbitraryly
+  label one as the `0'-child and the other as the `1'-child. The frequency of this new node will
+  be defined as the sum of the frequencies of its two children.}
+  \STATE{Enqueue the new node into the rear of $Q_2$}
+  \ENDWHILE
+  \RETURN {The single remaining root-vertex.}
+  \end{algorithmic}
+\end{algorithm}
+
+The encoding for a given symbol is then given by the path taken from the root node
+to the leaf vertex that contains the symbol in question. This scheme produces a 
+code with an optimal weighted average code length as defined by the frequencies of the symbols. \cite{huffman1952method}.
 
 \section{Experiments}
 \subsection{Image Quality}
