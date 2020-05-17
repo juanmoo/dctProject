@@ -11,37 +11,75 @@
 % Optional PDF information
 \ifpdf
 \hypersetup{
-  pdftitle={An Example Article},
-  pdfauthor={D. Doe, P. T. Frank, and J. E. Smith}
+  pdftitle={18.335 Final Project Report},
+  pdfauthor={Juan M Ortiz}
 }
 \fi
 
-% The next statement enables references to information in the
-% supplement. See the xr-hyperref package for details.
-
-\externaldocument{ex_supplement}
-
 \begin{document}
-
 \maketitle
 
 % REQUIRED
-\begin{abstract}
-  This is an example SIAM \LaTeX article. This can be used as a
-  template for new articles.  Abstracts must be able to stand alone
-  and so cannot contain citations to the paper's references,
-  equations, etc.  An abstract must consist of a single paragraph and
-  be concise. Because of online formatting, abstracts must appear as
-  plain as possible. Any equations should be inline.
-\end{abstract}
+% \begin{abstract}
+%   \lipsum[1]
+% \end{abstract}
 
 \section{Introduction}
-\lipsum[2-3]
+\begin{enumerate}
+  \item Highlight the importance and prominance of image compression.
+  \item List out differet ways in which image compression is used (store, retrive, analyse, transmit, etc.)
+\end{enumerate}
 
-\section{Main results}
+\subsection{History}
+\lipsum[3-4]
 
-\lipsum[4]
+\subsection{Compression Principles}
+\lipsum[5-6]
 
+\subsection{Modules of Image Coder}
+\lipsum[6-9]
+
+\subsection{Evaluation Metrics}
+\lipsum[10-11]
+
+\section{Background}
+\subsection{Explanation}
+\lipsum[12]
+
+\subsection{Color Specification}
+\lipsum[13-14]
+
+\subsection{Discrete Cosine Transform}
+\lipsum[15-18]
+
+\subsection{Singular Value Decomposition | Low Rank Approximation}
+\lipsum[10-20]
+
+\subsection{Block Algorithms}
+\lipsum[21-23]
+
+\subsection{Huffman Coding}
+\lipsum[24-25]
+
+\section{Experiments}
+\subsection{Image Quality}
+Need to test the ability of the algorithms to reconstruct the original image 
+over different settings.
+
+Possibly compare the reconstruction accuracy vs the compression
+
+\lipsum[26-30]
+
+\subsection{Performance}
+Compare compression vs operations
+compare quality vs operations
+
+\lipsum[31-32]
+
+\section{Conclusion}
+Nice ass conclusion
+
+\lipsum[33-34]
 
 \bibliographystyle{siamplain}
 \bibliography{references}
