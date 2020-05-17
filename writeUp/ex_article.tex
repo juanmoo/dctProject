@@ -170,7 +170,7 @@ as a factorization of the form:
  Two prominent examples of transforms are the discrete cosine transform (DCT) and
  singular value decomposition (SVD) and are briefly described below. \cite{dapena2002hybrid}
 
-\subsection{Singular Value Decomposition | Low Rank Approximation}
+\subsection{Singular Value Decomposition}
 One of the most famous factorizations that follow the above form is that of the
 singular value decomposition. In SVD, a matrix A with rank $r$ is decomposed into 
 two eigenvector matrices ($U_l = U$ and $U_r = V$) and a non-negative diagonal
@@ -221,6 +221,66 @@ to transforms like SVD where the normal basis that makes up $U_L$ and $U_R$ are
 dependent on $A$ and need to be included for proper decoding.
 
 \subsection{Quantization}
+After the transform has been applied, we can utilize our knowledge about the mechanism
+of the transform as well as our perception to selectively discard information that
+we believe to be unimportant to reasonably reconstructing the original input. 
+
+In SVD, this can easily be done by selecting the rank $r' \leq rank(A)$ by which to 
+approximate the original matrix. After choosing $r'$ we can throw away any columns
+of $U_L = U$ and $U_R = V$ that have an index greater than $r'$ and prune $C = \Sigma$ to
+the square matrix $\Sigma[1:r', 1:r']$. With respect to the Frobenius norm, this
+resultant matrix is the closest matrix with the restriction $rank \leq r'$ to the 
+original matrix A. \cite{trefethen1997numerical}
+
+For DCT, quantization aims to reducing the coefficients of the least important (high)
+frequencies to zero. This approximation takes advantage of the fact that the high
+frequencies components of images are often inconsequential to the way that we
+perceive them. To perform these quantization, we have defined fixed standard matrices 
+$Q$ that determine how relevant each frequency coefficient is. The quantized coefficients, $K$,
+are then calculated by a scaling followed by rounding as follows: 
+
+\[
+  K_{ij} = \text{round}(\frac{C_{in}}{Q_{ij}})
+\]
+
+The JPEG standard provides the following two tables for the quantization of luminance
+and chrominance respectively: \cite{sangwine2012colour}
+
+\begin{align*}
+  Q_Y &= \begin{pmatrix}
+    16&11&10&16&24&40&51&61 \\
+    12&12&14&19&26&58&60&55 \\
+    14&13&16&24&40&57&69&56 \\
+    14&17&22&29&51&87&80&62 \\
+    18&22&37&56&68&109&103&77 \\
+    24&35&55&64&81&104&113&92 \\
+    49&64&78&87&103&121&120&101 \\
+    72&92&95&98&112&100&103&99
+  \end{pmatrix} \\
+  Q_C &= \begin{pmatrix}
+    17&18&24&47&99&99&99&99 \\
+    18&21&26&66&99&99&99&99 \\
+    24&26&56&99&99&99&99&99 \\
+    47&66&99&99&99&99&99&99 \\
+    99&99&99&99&99&99&99&99 \\
+    99&99&99&99&99&99&99&99 \\
+    99&99&99&99&99&99&99&99 \\
+    99&99&99&99&99&99&99&99
+  \end{pmatrix}
+\end{align*}
+
+Once the data has been quantized, it is necessary to define an ordering to the 
+data so as to define how it is to be stored. In the case of transforms like DCT 
+where only the coefficients need to be packed, it is customary to encode the coefficients
+using a zig-zag pattern like the one shown in figure \ref{fig:zigzag}.
+
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=0.5 \textwidth]{zigzag}
+  \caption{Diagram of Zig-zag sequencing from \cite{raid2014jpeg}}
+  \label{fig:zigzag}
+\end{figure}
+
 
 \subsection{Block Algorithms}
 A common technique when designing image and video compression systems is that of
@@ -231,6 +291,7 @@ spacial redundancies often encountered images \cite{ahmed1974discrete}. For DCT,
 it is customary to utilize square blocks of size 8.
 
 \subsection{Huffman Coding}
+\lipsum[27-29]
 
 \section{Experiments}
 \subsection{Image Quality}
