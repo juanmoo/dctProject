@@ -26,7 +26,7 @@ def load_grayscale(path, square=False):
 Loads image in <path> in RGB format and outputs array representing image
 in YUV coordinates.
 '''
-def load_yuv(path, square=False):
+def load_image(path, square=False, yuv=True):
     img = Image.open(path)
     img = np.array(img)
 
@@ -34,13 +34,8 @@ def load_yuv(path, square=False):
         dim = min(img.shape[:-1])
         img = img[:dim, :dim, :]
 
-    # Transform RGB to YUV coordinates
-    rgb_to_yuv = np.array([[ 0.29900, -0.16874,  0.50000],
-                 [0.58700, -0.33126, -0.41869],
-                 [ 0.11400, 0.50000, -0.08131]])
-    
-    img = img @ rgb_to_yuv
-    img[:, :, 1:] += 128.0
+    if yuv:
+        img = rgb_to_yuv(img)
 
     return img
 
@@ -58,6 +53,22 @@ def yuv_to_rgb(img):
     
     img[:, :, 1:] -= 128.0
     img = img @ yuv_to_rgb
+
+    return img
+
+'''
+Transform image representing image in RGB coordinates to
+YUV coordinates.
+'''
+def rgb_to_yuv(img):
+    assert(len(img.shape) == 3 and img.shape[2] == 3)
+
+    rgb_to_yuv = np.array([[ 0.29900, -0.16874,  0.50000],
+                 [0.58700, -0.33126, -0.41869],
+                 [ 0.11400, 0.50000, -0.08131]])
+    
+    img = img @ rgb_to_yuv
+    img[:, :, 1:] += 128.0
 
     return img
 
@@ -101,10 +112,6 @@ if __name__ == '__main__':
     image_path = '../tmp/backyard.jpg'
     img = load_yuv(image_path, square=False)
     img = img_from_array(img, is_rgb=False)
-
-
-    # Y = img[:, :, 0]
-    # img = np.stack([Y] * 3, axis=2)
 
     img.save('../tmp/gs.jpg')
     print(img)
