@@ -27,25 +27,42 @@
 \section{Introduction}
 Along with the numerous benefits that we have come to enjoy in our transition to the Digital Age
 have come a plethora of technical challenges. In particular, the rise in the prominence
-of the role that data plays in these services has forced us to invent efficient solutions 
+of the role that data plays in our services has forced us to invent efficient solutions 
 to challenges related to storing, retrieving, processing, and transmitting various types of 
-data.
-
-One of the most common types of data that we utilize in both computer and mobile environments
+data. One of the most common types of data that we utilize in both computer and mobile environments
 is that of images. As such, there has been a lot of research in the field of image compression.
 Although the problem of compressing images falls within the general problem of compressing arbitrary
 raw binary data, we can greatly improve our performance by designing encoders that take 
 advantage of the statistical properties that images posses. Through the use of our domain-specific
 knowledge about how images are composed as well as how we perceive images, 
 modern compression algorithms are able to remove a great deal of redundancies
-so as to create much smaller representations that are able to be decoded into a 
+so as to create much smaller representations that are able to be decoded into 
 good reconstructions of the originals in accordance to human visual perception.
 
-\subsection{History}
-
-
 \subsection{Compression Principles}
-\lipsum[5-6]
+
+Today, the majority of methods utilized in image compression are based on the
+principles of \textbf{entropy coding} and \textbf{transform coding}. 
+
+The first, entropy coding, refers to a type of lossless compression scheme which is not
+dependent on the medium to which it is applied. Entropy coding aims to reduce
+the size of data processed by defining a mapping between the original symbols/patterns of 
+the data to one in which frequently occurring symbols/patterns are represented 
+using few bits and those that occur rarely are represented with more bits.
+The two most common algorithms used for entropy coding are Huffman coding and
+Arithmetic coding. A more detail overview of Huffman coding will be given in \textbf{Section 2}. On the other hand, transform coding refers to a technique utilized when dealing
+with natural data sources such as images and audio. The main idea behind transform
+coding is to utilize a linear process to convert the original representation of
+the data to one in which the most relevant information is contained within
+a few coefficients. On its own, a naive transform coding approach is lossless and 
+does not significantly reduce the information needed to encode the original data. However,
+the new representation along with domain knowledge about the data being encoded 
+enables us to keep only the most relevant information to recreate something that is mostly
+faithful with the original but is much smaller. The most widely used transform coding algorithm when
+dealing with image compression is that of the discrete cosine transform (DCT) which
+will be further described in \textbf{Section 2}. Additionally, we will describe
+a method based on the singular value decomposition (SVD) and compare it against
+the commonly used DCT.
 
 \subsection{Modules of Image Coder}
 \lipsum[6-9]
@@ -61,6 +78,7 @@ good reconstructions of the originals in accordance to human visual perception.
 \lipsum[13-14]
 
 \subsection{Discrete Cosine Transform}
+\cite{ahmed1974discrete}
 \lipsum[15-18]
 
 \subsection{Singular Value Decomposition | Low Rank Approximation}
@@ -92,6 +110,7 @@ Nice ass conclusion
 
 \lipsum[33-34]
 
+\pagebreak
 \bibliographystyle{siamplain}
 \bibliography{references}
 \end{document}
