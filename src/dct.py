@@ -83,7 +83,7 @@ def dct_factor(arr):
     m, n = arr.shape[:2]
     assert(m == n)
     basis = make_dct_basis(m)
-    return basis.T@(arr - 128.0)@basis
+    return np.round(basis.T@(arr - 128.0)@basis)
 
 def inv_dct(coeffs):
     m, n = coeffs.shape[:2]
