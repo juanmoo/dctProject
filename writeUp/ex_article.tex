@@ -8,6 +8,9 @@
 
 \input{ex_shared}
 
+% Packages
+\usepackage{enumitem}
+
 % Optional PDF information
 \ifpdf
 \hypersetup{
@@ -65,7 +68,36 @@ a method based on the singular value decomposition (SVD) and compare it against
 the commonly used DCT.
 
 \subsection{Modules of Image Coder}
-\lipsum[6-9]
+The typical configuration of an image encoder system is composed of the following 
+modules: source encoder, quantizer, and entropy coder \cite{raid2014jpeg}. A brief
+description of each of these modules is provided below:
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+  \item \textbf{Source Encoder.} 
+  The purpose of this module in the encoder system is to decorrelate the original
+  input and transform it into a set of sparse data values through the use of a 
+  transform coding method. In doing so, the new data representation compacts the
+  information of the original data into a small number of coefficients.
+
+  \item \textbf{Quantizer.}
+  The goal of the quantizer module is to reduce the amount of information needed
+  to store the representation created by the source encoder through decreasing 
+  the precision of the coefficients of the representation. During this step,
+  we can take advantage of domain-knowledge to discard information that will not
+  significantly affect the reconstruction of the input data.
+
+  \item \textbf{Entropy Coder.}
+  The last step in a typical compression system is the entropy coder module.
+  This step in the compression is lossless and aims to remove redundancies in the
+  bit-patterns produced by the quantized output of the quantizer module.
+\end{enumerate}
+
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{compression system.png}
+  \caption{Typical Compression System Architecture from \cite{raid2014jpeg}}
+  \label{fig:compression-arch}
+\end{figure}
 
 \subsection{Evaluation Metrics}
 \lipsum[10-11]
