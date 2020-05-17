@@ -100,7 +100,32 @@ description of each of these modules is provided below:
 \end{figure}
 
 \subsection{Evaluation Metrics}
-\lipsum[10-11]
+In order to meaningfully compare different compression systems, we need to have
+metrics to objectively compare their results. In image compression, two important
+criteria that these metrics need to capture are the level of compression and the
+quality of the reconstruction. The most common metrics for both of these criteria
+are listed and defined below:
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+  \item \textbf{Compression.} The most common measure for the degree by which an
+  image was compressed is perhaps the most obvious of just utilizing the compression
+  ratio CR defined as follows\cite{sayood2017introduction}:
+  \[
+    CR = \frac{\text{Size}_\text{compressed}}{\text{Size}_\text{original}}
+  \]
+  \item \textbf{Quality of Reconstruction.} A commonly accepted method of measuring
+  the quality of image reconstruction is that of peak signal-to-noise ratio (PSNR).
+  To define the PSNR between the original image $I$ and compressed representations $C$
+  using the common error metric of the mean square error (MSE) as follows:
+  \[
+    \text{PSNR}(I, C) = 10 \log_{10}(\frac{\max_{i, j}(I_{ij})^2}{\text{MSE}(I, C)})
+  \]
+
+  where MSE is defined as
+  \[
+    \text{MSE}(I, C) = \frac{1}{m \cdot n} \sum_{i = 1}^m \sum_{j = 1}^n (I_{ij} - C_{ij})^2
+  \]
+\end{enumerate}
 
 \section{Background}
 \subsection{Explanation}
