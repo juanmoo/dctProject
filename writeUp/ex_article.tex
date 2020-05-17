@@ -128,24 +128,109 @@ are listed and defined below:
 \end{enumerate}
 
 \section{Background}
-\subsection{Explanation}
-\lipsum[12]
+The following section will provide a brief exposition to the theory behind the methods
+utilized in the experiment section.
 
 \subsection{Color Specification}
-\lipsum[13-14]
+One of the most commonly utilized tricks to improve the performance of image compression
+systems is to store images using YUV color coordinates rather than RGB coordinates.
+Rather than storing the red, green, and blue components of the different pixels in 
+an image, descriptions of pixels in YUV coordinates are made out of a luminance (Y)
+and chrominance (U, V) components. The reason this scheme is useful is because the
+luminance is plays a much more crucial role than color in the way the human-eye 
+perceives light. Separating the luminance and chrominance components therefore allows
+us to discriminate how much information we throw away from each of these components
+based on how much they affect the way we perceive them. \cite{podpora2014yuv}
 
-\subsection{Discrete Cosine Transform}
-\cite{ahmed1974discrete}
-\lipsum[15-18]
+We can relate YUV and RGB color coordinates according to the following formula:
+
+\[
+  \begin{pmatrix} Y \\ U \\ V \end{pmatrix} = 
+  \begin{pmatrix}
+    0.299 & 0.587 & 0.114 \\
+    -0.169 & -0.334 & 0.500 \\
+    0.500 & -0.419 & -0.081
+  \end{pmatrix}
+  \begin{pmatrix} R \\ G \\ B \end{pmatrix} + 
+  \begin{pmatrix} 0 \\ 128 \\ 128 \end{pmatrix}
+\]
+
+\subsection{Transform Coding}
+At a fundamental level, a transform coding of an $m$ by $n$ matrix $A$ can be thought
+as a factorization of the form:
+ \[
+   A = U_l C U_r^\top
+ \]
+ where $U_l$ and $U_r$ are unitary matrices and C is an n by n matrix coefficient
+ whose form depend on the transform. As such, a transform is reversible and the
+ coefficient matrix can be computed as:
+ \[
+   C = U_l^\top A U_r
+ \]
+ Two prominent examples of transforms are the discrete cosine transform (DCT) and
+ singular value decomposition (SVD) and are briefly described below. \cite{dapena2002hybrid}
 
 \subsection{Singular Value Decomposition | Low Rank Approximation}
-\lipsum[10-20]
+One of the most famous factorizations that follow the above form is that of the
+singular value decomposition. In SVD, a matrix A with rank $r$ is decomposed into 
+two eigenvector matrices ($U_l = U$ and $U_r = V$) and a non-negative diagonal
+matrix $C = \Sigma$. A possible approach to compute these matrices is to calculate
+the eigenvalues $\lambda_i$ of the matrix $A^\top A$ and then solving the system
+of equations defined by finding the null space of all matrices in the form
+\[
+  A^\top A - \lambda_i~\text{ s.t. } 0 \leq i \leq r
+\]
+
+In practice, however, iterative methods such as the Householder Method or the QR 
+iteration are used.\cite{trefethen1997numerical}
+
+\subsection{Discrete Cosine Transform}
+One of the most widely used transform coding methods by far is that of the discrete
+cosine transform (DCT). Most notably, it has been part of the compression algorithm
+of choice for the popular image format JPEG. Some of the properties that make DCT
+a great transform choice for image compression include: (1) It has a fixed set of
+basis functions, so there is no need to transmit the basis used. (2) It has the 
+ability to reduce the compression artifact effect (i.e. visible block boundaries).
+(3) It is able to compress energy into low frequencies in image data. \cite{reininger1983distributions}
+\cite{ahmed1974discrete}
+
+More formally, we can use the framework of \textbf{2.2} to define DCT as a 
+factorization of the form
+
+\[
+  A = U_L C U_R^\top
+\]
+
+where the orthogonal matrices $U_L$ and $U_R$ are defined as 
+
+\begin{align*}
+  U_{Lij} &= \begin{cases}
+    \sqrt{\frac{1}{m}} & i = 1 \\
+    \sqrt{\frac{2}{m}} \cos(\frac{\pi (2j - 1)(i - 1)}{2m}) & 2 \leq i \leq m
+  \end{cases} \\
+  U_{Rij} &= \begin{cases}
+    \sqrt{\frac{1}{n}} & i = 1 \\
+    \sqrt{\frac{2}{n}} \cos(\frac{\pi (2j - 1)(i - 1)}{2n}) & 2 \leq i \leq n
+  \end{cases}
+\end{align*}
+
+The fact that $U_L$ and $U_R$ are independent of the matrix to be encoded $A$ and
+can thus be inferred without explicitly being included in the encoding of $A$
+give DCT a huge advantage in terms of the the compression ratio it can achieve
+to transforms like SVD where the normal basis that makes up $U_L$ and $U_R$ are
+dependent on $A$ and need to be included for proper decoding.
+
+\subsection{Quantization}
 
 \subsection{Block Algorithms}
-\lipsum[21-23]
+A common technique when designing image and video compression systems is that of
+using a block-based approach to coding. Rather than applying a transform directly
+on the entire image, the image is first divided into smaller blocks or sub-matrices
+to which the transform is then applied. This approach facilitates taking advantage of
+spacial redundancies often encountered images \cite{ahmed1974discrete}. For DCT, 
+it is customary to utilize square blocks of size 8.
 
 \subsection{Huffman Coding}
-\lipsum[24-25]
 
 \section{Experiments}
 \subsection{Image Quality}
