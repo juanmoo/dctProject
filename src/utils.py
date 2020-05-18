@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-from math import prod
+from math import prod, log10
 
 '''
 Loads image in <path> and transforms it into a single-channel image with grayscale 
@@ -142,6 +142,22 @@ def fillDiagonal(flat, dim):
                 print(len(flat))
                 print(out.shape)
     return out
+
+
+def MSE(I, C):
+    N = prod(I.size) * 3
+
+    I_arr = np.array(I)
+    C_arr = np.array(C)
+
+    Error = (I_arr - C_arr)
+    SSE = np.sum(Error * Error)
+    
+    return SSE/N
+
+def PSNR(I, C):
+    return 10 * log10(255**2/MSE(I, C))
+
 
 if __name__ == '__main__':
     # image_path = '../tmp/backyard.jpg'
