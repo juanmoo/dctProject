@@ -109,10 +109,53 @@ def square_resize(img, size):
     return new_image.resize((size, size))
 
 
-if __name__ == '__main__':
-    image_path = '../tmp/backyard.jpg'
-    img = load_yuv(image_path, square=False)
-    img = img_from_array(img, is_rgb=False)
+'''
+Diagonally Traverse 2d array
+'''
+def diagonalOrder(matrix) : 
+    m, n = matrix.shape
+    output = []
+    for line in range(1, m+n) : 
+        start_col = max(0, line - m) 
+        count = min(line, (n - start_col), m) 
+        for j in range(0, count) : 
+            output.append(matrix[min(m, line) - j - 1][start_col + j])
+    
+    return output
 
-    img.save('../tmp/gs.jpg')
-    print(img)
+def fillDiagonal(flat, dim):
+    out = np.zeros((dim, dim))
+
+    if len(flat) == 0:
+        return out
+        
+    m, n = dim, dim
+    c = 0
+    for line in range(1, m+n) : 
+        start_col = max(0, line - m) 
+        count = min(line, (n - start_col), m) 
+        for j in range(0, count) : 
+            try:
+                out[min(m, line) - j - 1][start_col + j] = flat[c]
+                c += 1
+            except:
+                print(len(flat))
+                print(out.shape)
+    return out
+
+if __name__ == '__main__':
+    # image_path = '../tmp/backyard.jpg'
+    # img = load_yuv(image_path, square=False)
+    # img = img_from_array(img, is_rgb=False)
+
+    # img.save('../tmp/gs.jpg')
+    # print(img)
+
+    arr = np.random.randint(10, size=(3, 3))
+    print(arr)
+
+    zigzag = diagonalOrder(arr)
+    print(zigzag)
+
+    rebuild = fillDiagonal(zigzag, 3)
+    print(rebuild)

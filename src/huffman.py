@@ -115,7 +115,7 @@ class HuffmanCoding:
 
 
 if __name__ == '__main__':
-    path = [32.4, 1, 1, 2, 3, 4, 4, 4, 4, 4]
+    path = [0, 0, 0, 0, 1]
 
     h = HuffmanCoding(path)
 

@@ -1,6 +1,8 @@
 import numpy as np
 from math import cos, sqrt, pi
 from common import Encoding
+from utils import diagonalOrder, fillDiagonal
+from huffman import HuffmanCoding
 
 class DCT(Encoding):
 
@@ -16,10 +18,10 @@ class DCT(Encoding):
         self.cpad = (self.block_size - self.cnum%self.block_size)%self.block_size
 
         # Transform Coding
-        self.blocks = []
+        self.encoded_blocks = []
 
         for channel in range(self.img.shape[-1]):
-            channel_blocks = []
+            encoded_channel_blocks = []
 
             padded = np.pad(self.img[:, :, channel], ((0, self.rpad), (0, self.cpad)), 'constant')
             rnum, cnum = padded.shape
@@ -28,20 +30,29 @@ class DCT(Encoding):
                 for j in range(cnum//self.block_size):
                     block = padded[block_size * i:block_size * (i + 1), block_size * j: block_size * (j + 1)]
                     coeffs = dct_factor(block)
-                    channel_blocks.append(coeffs)
+                    encoded_channel_blocks.append(self.encode_block(coeffs))
         
-            self.blocks.append(channel_blocks)
+            self.encoded_blocks.append(encoded_channel_blocks)
 
         return self
 
+    def encode_block(self, block):
+        symbols = diagonalOrder(block)
+        h = HuffmanCoding(symbols)
+        encoded = h.compress()
+        return (encoded, h.reverse_mapping)
+        
     def decode(self):
         output = np.zeros(self.img.shape)
 
         cnum = self.img.shape[1] + self.cpad
         horizontal_block_count = cnum // self.block_size
 
+        h_tmp = HuffmanCoding([])
+
         for channel in range(self.img.shape[2]):
-            for index, coeffs in enumerate(self.blocks[channel]):
+            for index, (encoded, rev_map) in enumerate(self.encoded_blocks[channel]):
+
                 i = index // horizontal_block_count
                 j = index % horizontal_block_count
 
@@ -53,6 +64,9 @@ class DCT(Encoding):
                 c_max = min((j + 1) * self.block_size, self.img.shape[1])
                 col_diff = c_max - c_min
 
+                h_tmp.reverse_mapping = rev_map
+                zigzag = h_tmp.decompress(encoded)
+                coeffs = fillDiagonal(zigzag, self.block_size)
                 block = inv_dct(coeffs)
 
                 output[r_min:r_max, c_min:c_max, channel] = block[:row_diff, :col_diff]
@@ -102,3 +116,5 @@ if __name__ == '__main__':
     decoded = inv_dct(dct_C)
     # decoded = np.array(decoded, dtype=np.uint8)
     print((arr - decoded).sum()/d**2)
+    # pass
+
