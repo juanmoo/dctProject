@@ -130,11 +130,10 @@ def inv_dct(coeffs, mult=1.0, is_Y=True):
     assert(m == n)
     basis = make_dct_basis(m)
     Q = Qy if is_Y else Qc
-    coeffs = (basis@coeffs@basis.T) + 128.0
     coeffs = Q * coeffs
+    coeffs = (basis@coeffs@basis.T) + 128.0
 
     return coeffs
-
 
 
 
