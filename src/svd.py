@@ -37,7 +37,12 @@ class SVD(Encoding):
         return self
 
     def calculate_size(self):
-        return None
+        total_size = 0.0
+        for c in range(self.img.shape[-1]):
+            for (u, v, sigma, mean) in self.blocks[c]:
+                total_size += prod(u.shape) + prod(v.shape) + prod(sigma.shape) + 1
+
+        return total_size
 
     def decode(self):
         output = np.zeros(self.img.shape)

@@ -30,7 +30,7 @@ class DCT(Encoding):
                 for j in range(cnum//self.block_size):
                     block = padded[block_size * i:block_size * (i + 1), block_size * j: block_size * (j + 1)]
                     is_Y = (channel == 0)
-                    coeffs = dct_factor(block, mult=mult, is_Y=is_Y)
+                    coeffs = dct_factor(block, mult=self.mult, is_Y=is_Y)
                     encoded_channel_blocks.append(self.encode_block(coeffs))
         
             self.encoded_blocks.append(encoded_channel_blocks)
@@ -68,14 +68,24 @@ class DCT(Encoding):
                 h_tmp.reverse_mapping = rev_map
                 zigzag = h_tmp.decompress(encoded)
                 coeffs = fillDiagonal(zigzag, self.block_size)
-                block = inv_dct(coeffs)
+                is_Y = (channel == 0)
+                block = inv_dct(coeffs, mult=self.mult, is_Y=is_Y)
 
                 output[r_min:r_max, c_min:c_max, channel] = block[:row_diff, :col_diff]
         
         return output
 
     def calculate_size(self):
-        pass
+        tot_size = 0.0
+
+        for c in range(self.img.shape[-1]):
+            for encoded, rev_map in self.encoded_blocks[c]:
+                tot_size += (1.0/8.0) * len(encoded)
+                tot_size += len(rev_map)
+                for k in rev_map:
+                    tot_size += (1.0/8.0) * len(k)
+
+        return tot_size
 
 
 memo = dict()
@@ -121,7 +131,7 @@ def dct_factor(arr, mult=1.0, is_Y=True):
     assert(m == n)
     basis = make_dct_basis(m)
     coeffs = np.round(basis.T@(arr - 128.0)@basis)
-    Q = Qy if is_Y else Qc
+    Q = (Qy if is_Y else Qc) * mult
     coeffs = (1/Q) * coeffs
     return np.round(coeffs)
 
@@ -129,12 +139,11 @@ def inv_dct(coeffs, mult=1.0, is_Y=True):
     m, n = coeffs.shape[:2]
     assert(m == n)
     basis = make_dct_basis(m)
-    Q = Qy if is_Y else Qc
+    Q = (Qy if is_Y else Qc) * mult
     coeffs = Q * coeffs
     coeffs = (basis@coeffs@basis.T) + 128.0
 
     return coeffs
-
 
 
 if __name__ == '__main__':

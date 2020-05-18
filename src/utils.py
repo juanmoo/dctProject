@@ -95,7 +95,7 @@ def img_from_array(arr, is_rgb=False):
     return img
 
 '''
-Calculate the size of an image considering only one color channel in bytes.
+Calculate the size of an image with three channels.
 '''
 def calculate_image_size(img):
     return prod(img.size) * 3
@@ -128,7 +128,7 @@ def fillDiagonal(flat, dim):
 
     if len(flat) == 0:
         return out
-        
+
     m, n = dim, dim
     c = 0
     for line in range(1, m+n) : 
