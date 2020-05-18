@@ -29,7 +29,8 @@ class DCT(Encoding):
             for i in range(rnum//self.block_size):
                 for j in range(cnum//self.block_size):
                     block = padded[block_size * i:block_size * (i + 1), block_size * j: block_size * (j + 1)]
-                    coeffs = dct_factor(block)
+                    is_Y = (channel == 0)
+                    coeffs = dct_factor(block, mult=mult, is_Y=is_Y)
                     encoded_channel_blocks.append(self.encode_block(coeffs))
         
             self.encoded_blocks.append(encoded_channel_blocks)
@@ -93,17 +94,47 @@ def make_dct_basis(dim):
 
     return basis
 
-def dct_factor(arr):
+Qy = np.array([
+    [16,11,10,16,24,40,51,61],
+    [12,12,14,19,26,58,60,55],
+    [14,13,16,24,40,57,69,56],
+    [14,17,22,29,51,87,80,62],
+    [18,22,37,56,68,109,103,77],
+    [24,35,55,64,81,104,113,92],
+    [49,64,78,87,103,121,120,101],
+    [72,92,95,98,112,100,103,99]
+])
+
+Qc = np.array([
+    [17,18,24,47,99,99,99,99],
+    [18,21,26,66,99,99,99,99],
+    [24,26,56,99,99,99,99,99],
+    [47,66,99,99,99,99,99,99],
+    [99,99,99,99,99,99,99,99],
+    [99,99,99,99,99,99,99,99],
+    [99,99,99,99,99,99,99,99],
+    [99,99,99,99,99,99,99,99]
+])
+
+def dct_factor(arr, mult=1.0, is_Y=True):
     m, n = arr.shape[:2]
     assert(m == n)
     basis = make_dct_basis(m)
-    return np.round(basis.T@(arr - 128.0)@basis)
+    coeffs = np.round(basis.T@(arr - 128.0)@basis)
+    Q = Qy if is_Y else Qc
+    coeffs = (1/Q) * coeffs
+    return np.round(coeffs)
 
-def inv_dct(coeffs):
+def inv_dct(coeffs, mult=1.0, is_Y=True):
     m, n = coeffs.shape[:2]
     assert(m == n)
     basis = make_dct_basis(m)
-    return (basis@coeffs@basis.T) + 128.0
+    Q = Qy if is_Y else Qc
+    coeffs = (basis@coeffs@basis.T) + 128.0
+    coeffs = Q * coeffs
+
+    return coeffs
+
 
 
 
