@@ -10,6 +10,7 @@
 
 % Packages
 \usepackage{enumitem}
+\usepackage{float}
 
 % Optional PDF information
 \ifpdf
@@ -21,11 +22,6 @@
 
 \begin{document}
 \maketitle
-
-% REQUIRED
-\begin{abstract}
-  \lipsum[1]
-\end{abstract}
 
 \section{Introduction}
 Along with the numerous benefits that we have come to enjoy in our transition to the Digital Age
@@ -137,7 +133,7 @@ systems is to store images using YUV color coordinates rather than RGB coordinat
 Rather than storing the red, green, and blue components of the different pixels in 
 an image, descriptions of pixels in YUV coordinates are made out of a luminance (Y)
 and chrominance (U, V) components. The reason this scheme is useful is because the
-luminance is plays a much more crucial role than color in the way the human-eye 
+luminance plays a much more crucial role than color in the way the human-eye 
 perceives light. Separating the luminance and chrominance components therefore allows
 us to discriminate how much information we throw away from each of these components
 based on how much they affect the way we perceive them. \cite{podpora2014yuv}
@@ -331,24 +327,61 @@ to the leaf vertex that contains the symbol in question. This scheme produces a
 code with an optimal weighted average code length as defined by the frequencies of the symbols. \cite{huffman1952method}.
 
 \section{Experiments}
+The experiments carried out consisted of compressing the photo shown in figure \ref{fig:benchmark} using
+a block size of 8 with both SVD and DCT. For each trial, the compression ratio
+to the original image was recorded and the quality of reconstruction was measured
+using PSNR.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5 \textwidth]{backyard.jpg}
+  \caption{Benchmark Image}
+  \label{fig:benchmark}
+\end{figure}
+
 \subsection{Image Quality}
-Need to test the ability of the algorithms to reconstruct the original image 
-over different settings.
+To control the compression ratio obtained with DCT, we varied the multiplication
+coefficient by which the quantization table given in \textbf{section 2.5} was 
+multiplied prior to quantization. The multiplication coefficient was varied from 
+0.01 to 1.0 with a resolution of 0.01.
 
-Possibly compare the reconstruction accuracy vs the compression
+In the other hand, for SVD, controlling the compression was done via placing a
+restriction on the fraction of the total value of the singular components that it used in
+its factorization. For example, if the limit was set to $f$, then it must be true that
+$$f \leq \frac{\sum_i^{r'} \sigma_i}{\sum_i^r \sigma_i}$$
+where $r$ is the original rank and $r'$ is the rank of the factorization used.
 
-\lipsum[26-30]
+For the experiments involving SVD, the utilized fraction was varied from 0.75 to 1.0
+with a resolution of 0.01.
 
-\subsection{Performance}
-Compare compression vs operations
-compare quality vs operations
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5 \textwidth]{dct qual.png}
+  \caption{Quality of DCT Reconstruction v. Compression Ratio}
+  \label{fig:dctqual}
+\end{figure}
 
-\lipsum[31-32]
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5 \textwidth]{svd qual.png}
+  \caption{Quality of SVD Reconstruction v. Compression Ratio}
+  \label{fig:svdqual}
+\end{figure}
+
+As shown by figures \ref{fig:dctqual} and \ref{fig:svdqual}, it seems to be the case
+that, for comparable levels of compression, the reconstruction quality of 
+DCT is superior to that of using SVD. This is consistent with
+the discussion of \textbf{section 2.4} because SVD needs to encode the basis for 
+its transform while the DCT does not.
 
 \section{Conclusion}
-Nice ass conclusion
-
-\lipsum[33-34]
+With the amount of information that we constantly encounter in today's Digital Age
+image compression has become a fundamental part of the systems we use. In this paper,
+we went over the fundamental components that make up a lossy image compression system
+such as the one used in the JPEG standard. Additionally, we numerically compared 
+the compression achieved by utilizing similar compression systems; one based on SVD
+and the other on DCT and empirically observed that DCT is able to achieve better 
+quality reconstructions for a given compression ratio.
 
 \pagebreak
 \bibliographystyle{siamplain}
